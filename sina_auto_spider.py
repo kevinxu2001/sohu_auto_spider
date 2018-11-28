@@ -123,19 +123,25 @@ def process_model():
 ' ************************  Functions for geting Trims Files ************************
 '''
 def process_trims():
+
+    logging.info("================ Start Trim Spider Process ================")
     dict_path=conf['dict_path']
     source_models_file = dict_path['root_path'] + version + '/' + dict_path['source_trims_dict_path']
 
     sink_path = dict_path['root_path'] + version + '/'+ dict_path['sink_trims_profile_path']
 
     file_list = os.listdir(source_models_file)
+    logging.info("### source_trims : count=[" + bytes(len(file_list)) + "] ###")
     i = 0
     for i in range(0, len(file_list)):
         file_name = os.path.join(source_models_file, file_list[i])
         if os.path.isfile(file_name):
+            logging.info("#### Start source_trim : file=[" + file_name + "] ###")
             url_list = gen_url_trims(file_name)
+            logging.info("#### UrlList count=[" + bytes(len(url_list)) + "] ###")
             print url_list
             for url in url_list:
+                logging.info("##### Start Get Data : url=[" + url[1] + "] ###")
                 # 切分子目录，以trim_id 取余，防止文件数量溢出
                 sub_dir = gen_trim_subdir(url[0])
                 trims_name = sink_path + bytes(sub_dir)
@@ -152,6 +158,7 @@ def process_trims():
         else:
             logging.error("### Not A File : file_name=[" + file_name + "] ###")
 
+    logging.info("================ End Trim Spider Process ================")
 
 
     pass
@@ -196,14 +203,15 @@ def gen_url_trims(path):
 
 
 if __name__ == '__main__':
-    argv = sys.agrg
+    argv = sys.argv[1]
+    print argv
     if argv == None:
-        print 'sina_auto_spider.py <model|trim>'
+        print 'usage: sina_auto_spider.py <model|trim>'
         sys.exit(2)
     elif argv == 'model':
         process_model()
     elif argv == 'trim':
         process_trims()
     else:
-        print 'sina_auto_spider.py <model|trim>'
+        print 'usage: sina_auto_spider.py <model|trim>'
         sys.exit(1)
